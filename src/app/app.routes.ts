@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
-    path: '',
+    path: 'reactive',
     loadChildren: () =>
       import('@reactive/reactive.routes').then((m) => m.ReactiveRoutes),
   },
@@ -12,6 +12,6 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: '',
-  }
+    redirectTo: '/reactive/basic',
+  },
 ];

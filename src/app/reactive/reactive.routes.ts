@@ -7,7 +7,7 @@ import {
 
 export const ReactiveRoutes: Routes = [
   {
-    path: '',
+    path: 'basic',
     component: BasicPageComponent,
   },
   {
