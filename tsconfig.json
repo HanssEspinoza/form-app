@@ -18,11 +18,13 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "ES2022",
+    "paths": {
+      "@shared/*": ["./src/app/shared/*"],
+      "@reactive/*": ["./src/app/reactive/*"],
+      "@auth/*": ["./src/app/auth/*"]
+    },
     "useDefineForClassFields": false,
-    "lib": [
-      "ES2022",
-      "dom"
-    ]
+    "lib": ["ES2022", "dom"]
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
