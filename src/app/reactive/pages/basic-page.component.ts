@@ -29,7 +29,15 @@ import {
                 class="form-control"
                 placeholder="Nombre del producto"
               />
-              <span class="form-text text-danger">Error message</span>
+              @if (myForm().controls['product'].getError('required') &&
+              myForm().controls['product'].touched) {
+              <span class="form-text text-danger">Este campo es requerido</span>
+              } @if (myForm().controls['product'].getError('minlength') &&
+              myForm().controls['product'].touched) {
+              <span class="form-text text-danger"
+                >Este campo requiere mínimo 3 letras</span
+              >
+              }
             </div>
           </div>
           <!-- Campo de producto  -->
@@ -115,7 +123,10 @@ export class BasicPageComponent {
   );
 
   onSave(): void {
-    if (this.myForm().invalid) return;
+    if (this.myForm().invalid) {
+      this.myForm().markAllAsTouched();
+      return;
+    }
 
     console.log(this.myForm().value);
 
