@@ -29,14 +29,10 @@ import {
                 class="form-control"
                 placeholder="Nombre del producto"
               />
-              @if (myForm().controls['product'].getError('required') &&
-              myForm().controls['product'].touched) {
-              <span class="form-text text-danger">Este campo es requerido</span>
-              } @if (myForm().controls['product'].getError('minlength') &&
-              myForm().controls['product'].touched) {
-              <span class="form-text text-danger"
-                >Este campo requiere mínimo 3 letras</span
-              >
+              @if (isValidField('product')) {
+              <span class="form-text text-danger">{{
+                getFieldError('product')
+              }}</span>
               }
             </div>
           </div>
@@ -50,9 +46,11 @@ import {
                 formControlName="price"
                 placeholder="Precio del producto"
               />
-              <span class="form-text text-danger"
-                >El precio debe ser 0 o mayor</span
-              >
+              @if (isValidField('price')) {
+              <span class="form-text text-danger">{{
+                getFieldError('price')
+              }}</span>
+              }
             </div>
           </div>
           <!-- Campo de Existencias  -->
@@ -65,9 +63,11 @@ import {
                 formControlName="inStorage"
                 placeholder="Existencias del producto"
               />
-              <span class="form-text text-danger"
-                >Las existencias deben ser 0 o mayor</span
-              >
+              @if (isValidField('inStorage')) {
+              <span class="form-text text-danger">{{
+                getFieldError('inStorage')
+              }}</span>
+              }
             </div>
           </div>
 
@@ -121,6 +121,32 @@ export class BasicPageComponent {
       inStorage: [0, [Validators.required, Validators.min(0)]],
     })
   );
+
+  isValidField(field: string): boolean | null {
+    return (
+      this.myForm().controls[field].errors &&
+      this.myForm().controls[field].touched
+    );
+  }
+
+  getFieldError(field: string): string | null {
+    if (!this.myForm().controls[field]) return null;
+
+    const errors = this.myForm().controls[field].errors || {};
+
+    for (const key of Object.keys(errors)) {
+      switch (key) {
+        case 'required':
+          return 'El campo es obligatorio';
+        case 'minlength':
+          return `El campo debe tener al menos ${errors[key].requiredLength} caracteres`;
+        case 'min':
+          return `El campo debe ser mayor o igual que ${errors[key].min}`;
+      }
+    }
+
+    return null;
+  }
 
   onSave(): void {
     if (this.myForm().invalid) {
