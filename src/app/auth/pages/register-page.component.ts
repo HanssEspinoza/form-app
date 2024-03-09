@@ -6,7 +6,11 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+
 import { InputComponent } from '@shared/components';
+import { ValidatorsService } from '@shared/services';
+import { EmailValidator } from '@shared/validators';
+// import * as customValidators from '@shared/validators';
 
 @Component({
   selector: 'app-register-page',
@@ -70,13 +74,13 @@ import { InputComponent } from '@shared/components';
     <pre>{{ registerForm().errors | json }}</pre>
 
     <h5>Nombre</h5>
-    <pre>{{ registerForm().value.name | json }}</pre>
+    <pre>{{ registerForm().controls['name'].errors | json }}</pre>
 
     <h5>Email</h5>
-    <pre>{{ registerForm().value.email | json }}</pre>
+    <pre>{{ registerForm().controls['email'].errors | json }}</pre>
 
     <h5>Username</h5>
-    <pre>{{ registerForm().value.username | json }}</pre>
+    <pre>{{ registerForm().controls['username'].errors | json }}</pre>
 
     <h5>Password</h5>
     <pre>{{ registerForm().value.password | json }}</pre>
@@ -88,16 +92,23 @@ import { InputComponent } from '@shared/components';
 })
 export class RegisterPageComponent {
   #fb = inject(FormBuilder);
+  #validatorsService = inject(ValidatorsService);
+  #emailValidator = inject(EmailValidator);
 
   public registerForm = signal<FormGroup>(
     this.#fb.group({
-      name: ['', [Validators.required]],
-      email: ['', [Validators.required]],
-      username: ['', [Validators.required]],
+      name: ['', [Validators.required, Validators.pattern(this.#validatorsService.firstNameAndLastNamePattern())]],
+      // email: ['', [Validators.required, Validators.pattern(this.#validatorsService.emailPatter())], [new EmailValidator()]],
+      email: ['', [Validators.required, Validators.pattern(this.#validatorsService.emailPatter())], [this.#emailValidator]],
+      username: ['', [Validators.required, this.#validatorsService.cantBeStrider]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', [Validators.required]],
     })
   );
+
+  // isValidField(field: string): boolean | null {
+  //   return this.#validatorsService.isValidField(this.registerForm(), field)
+  // }
 
   onSubmit(): void {
     this.registerForm().markAllAsTouched();

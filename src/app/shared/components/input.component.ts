@@ -1,5 +1,6 @@
-import { Component, input } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { ValidatorsService } from '@shared/services';
 
 type inputType = 'text' | 'password' | 'email';
 
@@ -17,10 +18,11 @@ type inputType = 'text' | 'password' | 'email';
           class="form-control"
           [placeholder]="placeholder()"
         />
-
-        <span class="form-text text-danger">
-          Debe de ser en formato de nombre y apellido
-        </span>
+        @if (isValidControl()) {
+          <span class="form-text text-danger">
+            Debe de ser en formato de nombre y apellido
+          </span>
+        }
       </div>
     </div>
   `,
@@ -31,4 +33,10 @@ export class InputComponent {
   control = input.required<FormControl>();
   type = input<inputType>('text');
   placeholder = input<string>('');
+
+  #validatorsService = inject(ValidatorsService);
+
+  public isValidControl() {
+    return this.#validatorsService.isValidField(this.control());
+  }
 }
