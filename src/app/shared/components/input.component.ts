@@ -19,9 +19,9 @@ type inputType = 'text' | 'password' | 'email';
           [placeholder]="placeholder()"
         />
         @if (isValidControl()) {
-          <span class="form-text text-danger">
-            Debe de ser en formato de nombre y apellido
-          </span>
+        <span class="form-text text-danger">
+          {{ getError() }}
+        </span>
         }
       </div>
     </div>
@@ -36,7 +36,11 @@ export class InputComponent {
 
   #validatorsService = inject(ValidatorsService);
 
-  public isValidControl() {
+  public isValidControl(): boolean | null {
     return this.#validatorsService.isValidField(this.control());
+  }
+
+  public getError(): string | null {
+    return this.#validatorsService.getControlError(this.control());
   }
 }

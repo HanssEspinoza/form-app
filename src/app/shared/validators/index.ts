@@ -1,2 +1,3 @@
-export * from './validators'
-export * from './email.validator'
+export * from './email.validator';
+export * from './is-equal-field.validator';
+export * from './validators';
