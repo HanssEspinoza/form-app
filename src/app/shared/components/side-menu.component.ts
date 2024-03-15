@@ -65,5 +65,9 @@ export class SideMenuComponent {
       title: 'Registro',
       route: '/register',
     },
+    {
+      title: 'Países',
+      route: '/country',
+    },
   ]);
 }

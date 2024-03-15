@@ -11,6 +11,11 @@ export const routes: Routes = [
     loadChildren: () => import('@auth/auth.routes').then((m) => m.AuthRoutes),
   },
   {
+    path: 'country',
+    loadChildren: () =>
+      import('@country/country.routes').then((m) => m.CountryRoutes),
+  },
+  {
     path: '**',
     redirectTo: '/reactive/basic',
   },

@@ -21,7 +21,8 @@
     "paths": {
       "@shared/*": ["./src/app/shared/*"],
       "@reactive/*": ["./src/app/reactive/*"],
-      "@auth/*": ["./src/app/auth/*"]
+      "@auth/*": ["./src/app/auth/*"],
+      "@country/*": ["./src/app/country/*"],
     },
     "useDefineForClassFields": false,
     "lib": ["ES2022", "dom"]
