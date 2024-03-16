@@ -6,9 +6,9 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { Region } from '@country/interfaces';
+import { Region, SmallCountry } from '@country/interfaces';
 import { CountryService } from '@country/services';
-import { switchMap } from 'rxjs';
+import { switchMap, tap } from 'rxjs';
 
 @Component({
   selector: 'app-country',
@@ -32,17 +32,19 @@ import { switchMap } from 'rxjs';
         </div>
       </div>
       <!-- Country -->
+      @if(countriesByRegion().length > 0) {
       <div class="row mb-3">
         <div class="col">
           <label class="form-label">País:</label>
-          <select class="form-control" formControlName="region">
+          <select class="form-control" formControlName="country">
             <option value="" disabled>>-- Seleccione País --<</option>
-            <!-- @for(region of regions; track region) {
-            <option [value]="region">{{ region }}</option>
-            } -->
+            @for(country of countriesByRegion(); track country) {
+            <option [value]="country.cca3">{{ country.name }}</option>
+            }
           </select>
         </div>
       </div>
+      }
     </form>
 
     <h3>Formulario</h3>
@@ -54,6 +56,8 @@ import { switchMap } from 'rxjs';
   styles: ``,
 })
 export class CountryComponent {
+  public countriesByRegion = signal<SmallCountry[]>([]);
+
   #fb = inject(FormBuilder);
   #countryService = inject(CountryService);
 
@@ -77,8 +81,9 @@ export class CountryComponent {
     this.countryForm()
       .get('region')
       ?.valueChanges.pipe(
-        switchMap((resp) => this.#countryService.getCountriesByRegion(resp))
+        tap(() => this.countryForm().get('country')!.setValue('')),
+        switchMap((region) => this.#countryService.getCountriesByRegion(region))
       )
-      .subscribe((value) => console.log(value));
+      .subscribe((countries) => this.countriesByRegion.set(countries));
   }
 }
