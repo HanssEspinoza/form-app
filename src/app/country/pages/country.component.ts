@@ -8,7 +8,7 @@ import {
 } from '@angular/forms';
 import { Region, SmallCountry } from '@country/interfaces';
 import { CountryService } from '@country/services';
-import { switchMap, tap } from 'rxjs';
+import { filter, switchMap, tap } from 'rxjs';
 
 @Component({
   selector: 'app-country',
@@ -45,6 +45,21 @@ import { switchMap, tap } from 'rxjs';
         </div>
       </div>
       }
+
+      <!-- Borders -->
+      @if(bordersByCountry().length > 0) {
+      <div class="row mb-3">
+        <div class="col">
+          <label class="form-label">Fronteras:</label>
+          <select class="form-control" formControlName="border">
+            <option value="" disabled>>-- Seleccione la frontera --<</option>
+            @for(country of bordersByCountry(); track country) {
+            <option [value]="country.cca3">{{ country.name }}</option>
+            }
+          </select>
+        </div>
+      </div>
+      }
     </form>
 
     <h3>Formulario</h3>
@@ -57,6 +72,7 @@ import { switchMap, tap } from 'rxjs';
 })
 export class CountryComponent {
   public countriesByRegion = signal<SmallCountry[]>([]);
+  public bordersByCountry = signal<SmallCountry[]>([]);
 
   #fb = inject(FormBuilder);
   #countryService = inject(CountryService);
@@ -65,7 +81,7 @@ export class CountryComponent {
     this.#fb.group({
       region: ['', Validators.required],
       country: ['', Validators.required],
-      borders: ['', Validators.required],
+      border: ['', Validators.required],
     })
   );
 
@@ -75,6 +91,7 @@ export class CountryComponent {
 
   ngOnInit() {
     this.#onRegionChanged();
+    this.#onCountryChanged();
   }
 
   #onRegionChanged(): void {
@@ -85,5 +102,21 @@ export class CountryComponent {
         switchMap((region) => this.#countryService.getCountriesByRegion(region))
       )
       .subscribe((countries) => this.countriesByRegion.set(countries));
+  }
+
+  #onCountryChanged(): void {
+    this.countryForm()
+      .get('country')
+      ?.valueChanges.pipe(
+        tap(() => this.countryForm().get('border')!.setValue('')),
+        filter((value: string) => value.length > 0),
+        switchMap((alphaCode) =>
+          this.#countryService.getCountryByAlphaCode(alphaCode)
+        ),
+        switchMap((country) =>
+          this.#countryService.getCountryBordersByCodes(country.borders)
+        )
+      )
+      .subscribe((countries) => this.bordersByCountry.set(countries));
   }
 }
